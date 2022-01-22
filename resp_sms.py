@@ -6,7 +6,7 @@ from twilio import twiml
 app = Flask(__name__)
 
 
-@app.route('/sms', methods=['POST'])
+@app.route('/sms', methods=['POST', "GET"])
 def sms():
     number = request.form["From"]
     message_body = request.form["Body"]
@@ -17,4 +17,4 @@ def sms():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
