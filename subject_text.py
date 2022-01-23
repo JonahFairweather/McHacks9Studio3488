@@ -134,9 +134,9 @@ def get_web_tags(paragraph):
 
 if __name__ == '__main__':
 
-    lol = reddit_scrape.extract_comments()
+    comments = reddit_scrape.extract_comments()
 
-    print(get_web_tags(lol))
+    print(get_web_tags(comments))
 
 
 

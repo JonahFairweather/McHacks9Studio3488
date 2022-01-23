@@ -1,6 +1,10 @@
+from datetime import datetime
+
 from twilio.rest import Client
 import praw
 import os
+import reddit_scrape
+import subject_text
 
 # using the praw library and a script created using the reddit api we are able to use our local host to webscrape reddit
 # this creates a Reddit instance
@@ -10,21 +14,7 @@ reddit = praw.Reddit(
     user_agent="SubScraper"
 )
 
-# for adding to the final message
-prompt = ""
-
-def get_prompt():
-    global prompt
-    # finds the days top rated post in r/WritingPrompts and returns it as a PRAW Subreddit instance
-    top = reddit.subreddit('WritingPrompts').top("day", limit=1)
-    for post in top:
-        # trims off the standard header used i r/WritingPrompts
-        prompt = post.title[5::]
-    return prompt
-
-
-print(get_prompt())
-
+prompt = reddit_scrape.get_prompt()
 # See Environment Variables
 account_sid = os.environ['TWILIO_ACCOUNT_SID']
 auth_token = os.environ['TWILIO_AUTH_TOKEN']
@@ -32,13 +22,40 @@ auth_token = os.environ['TWILIO_AUTH_TOKEN']
 # creates and instance of Client from the twilio library
 client = Client(account_sid, auth_token)
 
-# sends message to our client
-message = client.messages \
-    .create(
-    body=prompt,
-    from_='+16067312179',
-    to='+12023049104'
-)
 
+def get_tags():
+    comments = reddit_scrape.extract_comments()
+    return subject_text.get_web_tags(comments)
+
+
+def send_prompt():
+    p = reddit_scrape.get_prompt()
+    tags = get_tags()
+    full_prompt = "\nTake some time to reflect with Bubble\nHere is your prompt for today:\n" + p
+    full_prompt += "\n\nIf you need some inspiration here are a couple buzzwords from other responses to get your " \
+                   "creativity flowing:\n\n" + ", ".join(tags)
+
+    # sends message to our client
+    message = client.messages \
+        .create(
+            body=full_prompt,
+            messaging_service_sid='MG1803e16098d246e86ee09763272fb28d',
+            to='+12023049104'
+        )
+    return message
+
+
+def send_reminder():
+    message = client.messages \
+        .create(
+            messaging_service_sid='MG1803e16098d246e86ee09763272fb28d',
+            body='REMINDER: Let your creativity flow with Bubble.\nRemember to journal today.' +
+                 'website: ',
+            to='+12023049104'
+        )
+    return message
+
+
+message = send_prompt()
 # to ensure we have sent the message correctly we print out the ID which can be verified on the Twilio platform
 print(message.sid)
