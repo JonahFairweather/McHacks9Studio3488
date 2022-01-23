@@ -19,7 +19,7 @@ def find_top_post():
 def get_prompt():
     prompt = ""
     # finds the days top rated post in r/WritingPrompts and returns it as a PRAW Subreddit instance
-    top = reddit.subreddit('WritingPrompts').top("day", limit=1)
+    top = reddit.subreddit('WritingPrompts').top("month", limit=1)
     for post in top:
         # trims off the standard header used i r/WritingPrompts
         prompt = post.title[5::]
@@ -51,6 +51,10 @@ def extract_comments():
             continue
         comment_content += root_comment.body
     return comment_content
+
+
+if __name__ != '__main__':
+    posts = find_top_post()
 
 
 if __name__ == '__main__':
