@@ -4,6 +4,7 @@ from twilio.rest import Client
 import praw
 import os
 import reddit_scrape
+import subject_text
 
 # using the praw library and a script created using the reddit api we are able to use our local host to webscrape reddit
 # this creates a Reddit instance
@@ -22,9 +23,18 @@ auth_token = os.environ['TWILIO_AUTH_TOKEN']
 client = Client(account_sid, auth_token)
 
 
+def get_tags():
+    comments = reddit_scrape.extract_comments()
+    return subject_text.get_web_tags(comments)
+
+
 def send_prompt():
     p = reddit_scrape.get_prompt()
-    full_prompt = "Take some time to reflect with Bubble at .\nHere is your prompt for today:\n" + p
+    tags = get_tags()
+    full_prompt = "\nTake some time to reflect with Bubble\nHere is your prompt for today:\n" + p
+    full_prompt += "\n\nIf you need some inspiration here are a couple buzzwords from other responses to get your " \
+                   "creativity flowing:\n\n" + ", ".join(tags)
+
     # sends message to our client
     message = client.messages \
         .create(
@@ -39,7 +49,7 @@ def send_reminder():
     message = client.messages \
         .create(
             messaging_service_sid='MG1803e16098d246e86ee09763272fb28d',
-            body='REMINDER: Let your creativity flow with Bubble.\nRemember to submit your journal entry on our' +
+            body='REMINDER: Let your creativity flow with Bubble.\nRemember to journal today.' +
                  'website: ',
             to='+12023049104'
         )
