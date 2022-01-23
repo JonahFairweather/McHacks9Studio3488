@@ -53,9 +53,5 @@ def extract_comments():
     return comment_content
 
 
-if __name__ != '__main__':
-    posts = find_top_post()
-
-
 if __name__ == '__main__':
     print("test")
