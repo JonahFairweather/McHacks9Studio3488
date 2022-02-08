@@ -10,7 +10,7 @@ import subject_text
 # this creates a Reddit instance
 reddit = praw.Reddit(
     client_id="3YhYN_v6icb9G4RZmqHnyw",
-    client_secret="hxNP6hdsr9O37akYy_da7ArV79tPKQ",
+    client_secret="***",
     user_agent="SubScraper"
 )
 
@@ -39,7 +39,7 @@ def send_prompt():
     message = client.messages \
         .create(
             body=full_prompt,
-            messaging_service_sid='MG1803e16098d246e86ee09763272fb28d',
+            messaging_service_sid='***',
             to='+12023049104'
         )
     return message
@@ -48,7 +48,7 @@ def send_prompt():
 def send_reminder():
     message = client.messages \
         .create(
-            messaging_service_sid='MG1803e16098d246e86ee09763272fb28d',
+            messaging_service_sid='***',
             body='REMINDER: Let your creativity flow with Bubble.\nRemember to journal today.' +
                  'website: ',
             to='+12023049104'
